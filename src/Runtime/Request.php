@@ -110,11 +110,9 @@ class Request
 
         $queryString = self::getQueryString($event);
 
-        parse_str($queryString, $queryParameters);
-
         return [
             empty($queryString) ? $uri : $uri.'?'.$queryString,
-            http_build_query($queryParameters),
+            $queryString,
         ];
     }
 
@@ -127,16 +125,7 @@ class Request
     protected static function getQueryString(array $event)
     {
         if (isset($event['version']) && $event['version'] === '2.0') {
-            return http_build_query(
-                collect($event['queryStringParameters'] ?? [])
-                ->mapWithKeys(function ($value, $key) {
-                    $values = explode(',', $value);
-
-                    return count($values) === 1
-                        ? [$key => $values[0]]
-                        : [(substr($key, -2) == '[]' ? substr($key, 0, -2) : $key) => $values];
-                })->all()
-            );
+            return $event['rawQueryString'];
         }
 
         if (! isset($event['multiValueQueryStringParameters'])) {
