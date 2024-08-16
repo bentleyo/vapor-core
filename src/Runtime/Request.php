@@ -110,11 +110,9 @@ class Request
 
         $queryString = self::getQueryString($event);
 
-        parse_str($queryString, $queryParameters);
-
         return [
             empty($queryString) ? $uri : $uri.'?'.$queryString,
-            http_build_query($queryParameters),
+            $queryString,
         ];
     }
 
