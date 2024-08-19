@@ -25,7 +25,10 @@ class FpmRequestTest extends TestCase
             ],
         ]);
 
-        $this->assertSame(http_build_query(['Host' => urldecode($host)]), $request->serverVariables['QUERY_STRING']);
+        $query = http_build_query(['Host' => urldecode($host)]);
+
+        $this->assertSame($query, $request->serverVariables['QUERY_STRING']);
+        $this->assertSame('/?'.$query, $request->serverVariables['REQUEST_URI']);
     }
 
     public function test_api_gateway_headers_are_handled()
@@ -99,13 +102,13 @@ class FpmRequestTest extends TestCase
             ],
         ]);
 
-        $this->assertSame(
-            http_build_query([
-                'key1' => 'value1',
-                'key2' => ['value2', 'value3'],
-            ]),
-            $request->serverVariables['QUERY_STRING']
-        );
+        $query = http_build_query([
+            'key1' => 'value1',
+            'key2' => ['value2', 'value3'],
+        ]);
+
+        $this->assertSame($query, $request->serverVariables['QUERY_STRING']);
+        $this->assertSame('/?'.$query, $request->serverVariables['REQUEST_URI']);
     }
 
     public function test_load_balancer_headers_are_over_spoofed_headers()
